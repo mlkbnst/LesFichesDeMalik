@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiches de philo — Bac</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>Fiches de philo</h1>
+      <span class="subtitle">Bac · Notions, auteurs, citations</span>
+    </div>
+    <div class="search-wrap">
+      <input type="search" id="search" placeholder="Rechercher une notion, un auteur, une citation, un mot-clé…" autocomplete="off">
+    </div>
+    <div class="topbar-actions">
+      <button id="btn-citations" class="btn-ghost" title="Toutes les citations">⌘ Citations</button>
+      <button id="btn-new" class="btn-primary">+ Nouvelle fiche</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Notions au programme</h3>
+        <nav id="nav-notions" class="nav-list"></nav>
+      </div>
+    </aside>
+
+    <main class="main" id="main">
+      <div class="empty-state">
+        <p>Sélectionne une notion à gauche.</p>
+      </div>
+    </main>
+
+    <aside class="side-panel" id="side-panel"></aside>
+  </div>
+
+  <!-- Modal nouvelle fiche -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-content">
+      <button class="close" id="close-modal" aria-label="Fermer">×</button>
+      <h2>Nouvelle fiche</h2>
+
+      <div class="modal-tabs">
+        <button class="tab active" data-tab="ai">Via Claude (recommandé)</button>
+        <button class="tab" data-tab="manual">Saisie manuelle</button>
+      </div>
+
+      <section class="tab-panel active" data-panel="ai">
+        <p class="hint">Pour générer une fiche détaillée à partir de tes notes brutes :</p>
+        <ol class="steps">
+          <li>Copie tes notes / résumés / extraits de cours.</li>
+          <li>Colle-les dans le chat Claude et demande <em>« génère une fiche pour [notion] »</em>.</li>
+          <li>Claude ajoute l'entrée à <code>fiches.js</code>.</li>
+          <li>Recharge cette page — la fiche apparaît.</li>
+        </ol>
+        <p class="hint muted">Tu peux aussi importer une fiche au format JSON ci-dessous.</p>
+        <div class="modal-actions">
+          <button id="btn-import" class="btn-primary">Importer .json</button>
+          <input type="file" id="file-import" accept=".json,application/json" hidden>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="manual">
+        <p class="hint">Construis une fiche par champs. À la fin, tu obtiens un bloc JSON à coller dans <code>fiches.js</code>.</p>
+        <form id="manual-form" class="manual-form">
+          <label>Notion <input name="notion" placeholder="ex: La justice" required></label>
+          <label>Problématique <textarea name="problematique" rows="2" placeholder="Question directrice qui ouvre la fiche…"></textarea></label>
+          <label>Définitions clés (une par ligne, format <em>Terme : définition</em>)
+            <textarea name="definitions" rows="4"></textarea>
+          </label>
+          <label>Distinctions conceptuelles (une par ligne)
+            <textarea name="distinctions" rows="3"></textarea>
+          </label>
+          <label>Axes (séparés par <code>---</code>, chaque axe : titre puis contenu)
+            <textarea name="axes" rows="6" placeholder="I. Titre&#10;Contenu de l'axe...&#10;---&#10;II. Titre&#10;…"></textarea>
+          </label>
+          <label>Citations (une par ligne, format <em>"Texte" — Auteur, Œuvre, ref</em>)
+            <textarea name="citations" rows="4"></textarea>
+          </label>
+          <label>Sujets de bac types (un par ligne)
+            <textarea name="sujets" rows="3"></textarea>
+          </label>
+          <label>Notions liées (séparées par des virgules)
+            <input name="liees" placeholder="liberté, devoir, état">
+          </label>
+          <div class="modal-actions">
+            <button type="submit" class="btn-primary">Générer le JSON</button>
+          </div>
+        </form>
+        <pre id="json-output" class="json-output" hidden></pre>
+      </section>
+    </div>
+  </div>
+
+  <script src="fiches.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
