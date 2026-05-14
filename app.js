@@ -11,8 +11,48 @@ const state = {
   currentFicheId: null,
   currentAuteur: null,
   citationFilter: null,
-  query: ""
+  query: "",
+  isAdmin: false
 };
+
+/* ─── admin ──────────────────────────────────────────────── */
+const ADMIN_CODE = "user1234";
+const ADMIN_KEY = "philo-admin-v1";
+
+function loadAdmin() {
+  state.isAdmin = localStorage.getItem(ADMIN_KEY) === "1";
+  applyAdminState();
+}
+function applyAdminState() {
+  document.body.classList.toggle("is-admin", state.isAdmin);
+  const btn = document.getElementById("btn-admin");
+  if (btn) {
+    btn.innerHTML = state.isAdmin
+      ? '<span class="lock-icon" aria-hidden="true">✓</span>'
+      : '<span class="lock-icon" aria-hidden="true">🔒</span>';
+    btn.classList.toggle("is-active", state.isAdmin);
+    btn.title = state.isAdmin ? "Mode admin activé — clic pour quitter" : "Connexion administrateur";
+  }
+}
+function promptAdmin() {
+  if (state.isAdmin) {
+    if (confirm("Quitter le mode administrateur ?")) {
+      state.isAdmin = false;
+      try { localStorage.removeItem(ADMIN_KEY); } catch (e) {}
+      applyAdminState();
+    }
+    return;
+  }
+  const code = prompt("Code administrateur :");
+  if (code === null) return;
+  if (code === ADMIN_CODE) {
+    state.isAdmin = true;
+    try { localStorage.setItem(ADMIN_KEY, "1"); } catch (e) {}
+    applyAdminState();
+  } else {
+    alert("Code incorrect.");
+  }
+}
 
 /* ─── helpers ─────────────────────────────────────────────── */
 const slug = s => s.toLowerCase()
@@ -130,6 +170,10 @@ function renderSidebar() {
       btn.innerHTML = `<span>${notion}</span><span class="nav-badge">${filled ? "●" : "○"}</span>`;
       if (filled) btn.onclick = () => selectFiche(fiche.id);
       else btn.onclick = () => {
+        if (!state.isAdmin) {
+          alert("Fiche non disponible. Seul l'administrateur peut ajouter des fiches.");
+          return;
+        }
         $("#btn-new").click();
         setTimeout(() => {
           const input = document.querySelector('[name="notion"]');
@@ -589,7 +633,10 @@ function renderEmpty() {
 }
 
 /* ─── modal ───────────────────────────────────────────────── */
-function openModal() { $("#modal").hidden = false; }
+function openModal() {
+  if (!state.isAdmin) { promptAdmin(); return; }
+  $("#modal").hidden = false;
+}
 function closeModal() { $("#modal").hidden = true; $("#json-output").hidden = true; }
 
 function buildFicheJSON(form) {
@@ -644,6 +691,7 @@ function bindEvents() {
   $("#btn-citations").addEventListener("click", () => { showAllCitations(); closeSidebarOnMobile(); });
   $("#btn-menu").addEventListener("click", () => toggleSidebar());
   $("#sidebar-backdrop").addEventListener("click", () => toggleSidebar(false));
+  $("#btn-admin").addEventListener("click", promptAdmin);
 
   $$(".tab").forEach(t => t.addEventListener("click", () => {
     $$(".tab").forEach(x => x.classList.remove("active"));
@@ -692,6 +740,7 @@ function bindEvents() {
 /* ─── init ────────────────────────────────────────────────── */
 function init() {
   setupRevealObserver();
+  loadAdmin();
   renderSidebar();
   if (window.FICHES.length) selectFiche(window.FICHES[0].id);
   else renderEmpty();
