@@ -11,18 +11,29 @@
 </head>
 <body>
   <header class="topbar">
+    <button id="btn-menu" class="btn-menu" aria-label="Ouvrir le menu">
+      <span></span><span></span><span></span>
+    </button>
     <div class="brand">
       <h1>Fiches de philo</h1>
       <span class="subtitle">Bac · Notions, auteurs, citations</span>
     </div>
     <div class="search-wrap">
-      <input type="search" id="search" placeholder="Rechercher une notion, un auteur, une citation, un mot-clé…" autocomplete="off">
+      <input type="search" id="search" placeholder="Rechercher une notion, un auteur, une citation…" autocomplete="off">
     </div>
     <div class="topbar-actions">
-      <button id="btn-citations" class="btn-ghost" title="Toutes les citations">⌘ Citations</button>
-      <button id="btn-new" class="btn-primary">+ Nouvelle fiche</button>
+      <button id="btn-citations" class="btn-ghost" title="Toutes les citations">
+        <span class="btn-label-full">⌘ Citations</span>
+        <span class="btn-label-short" aria-hidden="true">❝</span>
+      </button>
+      <button id="btn-new" class="btn-primary">
+        <span class="btn-label-full">+ Nouvelle fiche</span>
+        <span class="btn-label-short" aria-hidden="true">+</span>
+      </button>
     </div>
   </header>
+
+  <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
   <div class="layout">
     <aside class="sidebar">

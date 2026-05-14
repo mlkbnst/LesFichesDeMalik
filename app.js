@@ -155,6 +155,7 @@ function selectFiche(id) {
   $(".main").scrollTop = 0;
   setupRevealObserver();
   requestAnimationFrame(() => observeReveal());
+  closeSidebarOnMobile();
 }
 
 function renderFiche(f) {
@@ -506,6 +507,7 @@ function selectAuteur(nom) {
   $(".main").scrollTop = 0;
   setupRevealObserver();
   requestAnimationFrame(() => observeReveal());
+  closeSidebarOnMobile();
 }
 
 /* ─── all citations view — groupé par notion ─────────────── */
@@ -624,13 +626,24 @@ function buildFicheJSON(form) {
 /* ─── search ──────────────────────────────────────────────── */
 function onSearch(e) { state.query = e.target.value; renderSidebar(); }
 
+/* ─── mobile: sidebar drawer ─────────────────────────────── */
+function toggleSidebar(force) {
+  const open = force === undefined ? !document.body.classList.contains("sidebar-open") : force;
+  document.body.classList.toggle("sidebar-open", open);
+}
+function closeSidebarOnMobile() {
+  if (window.innerWidth <= 720) document.body.classList.remove("sidebar-open");
+}
+
 /* ─── events ──────────────────────────────────────────────── */
 function bindEvents() {
   $("#search").addEventListener("input", onSearch);
   $("#btn-new").addEventListener("click", openModal);
   $("#close-modal").addEventListener("click", closeModal);
   $("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
-  $("#btn-citations").addEventListener("click", showAllCitations);
+  $("#btn-citations").addEventListener("click", () => { showAllCitations(); closeSidebarOnMobile(); });
+  $("#btn-menu").addEventListener("click", () => toggleSidebar());
+  $("#sidebar-backdrop").addEventListener("click", () => toggleSidebar(false));
 
   $$(".tab").forEach(t => t.addEventListener("click", () => {
     $$(".tab").forEach(x => x.classList.remove("active"));
